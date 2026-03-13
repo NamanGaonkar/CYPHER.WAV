@@ -119,7 +119,7 @@ CYPHER.WAV/
 
 ## Made by
 
-**NAMAN** — built as part of the AITD project series.
+**NAMAN** — built as part of the hobbie project series.
 
 ---
 
