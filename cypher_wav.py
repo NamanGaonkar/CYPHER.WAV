@@ -380,6 +380,7 @@ class MainWindow(QMainWindow):
 
         # Visualizer
         self._viz: Optional[VisualizerDialog] = None
+        self._current_track: Optional[Track] = None
 
         self.setWindowTitle("CYPHER.WAV")
         self.setMinimumSize(1200, 760)
@@ -1065,6 +1066,7 @@ class MainWindow(QMainWindow):
             self._play(t)
 
     def _play(self, track: Track) -> None:
+        self._current_track = track
         self.player.stop()
         self.player.setSource(QUrl())
         self.player.setSource(QUrl(track.stream_url))
@@ -1197,8 +1199,8 @@ class MainWindow(QMainWindow):
             self.status_text.setText(f"PLAYLIST CREATED: {n}")
 
     def _add_current_to_pl(self) -> None:
-        if self.current_index < 0 or not self.results: return
-        self._add_to_pl(self.results[self.current_index])
+        if self._current_track is None: return
+        self._add_to_pl(self._current_track)
 
     def _add_to_pl(self, track: Track) -> None:
         if not self.playlists:
@@ -1212,7 +1214,11 @@ class MainWindow(QMainWindow):
             self.playlists[name].append(track)
             self._save_playlists()
             self._refresh_lib_list()
-            self.status_text.setText(f"ADDED TO: {name}")
+            self._refresh_sb_playlists()
+            # If the user is currently viewing this playlist, refresh its track table
+            if self._active_playlist == name:
+                self._show_pl_tracks(name)
+            self.status_text.setText(f"ADDED TO: {name}  ({len(self.playlists[name])} tracks)")
 
     def _refresh_sb_playlists(self) -> None:
         self.sb_playlist_list.clear()
